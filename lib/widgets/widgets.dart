@@ -1,3 +1,4 @@
+export 'package:chat_flapp/widgets/chat_message.dart';
 export 'package:chat_flapp/widgets/bluebotton.dart';
 export 'package:chat_flapp/widgets/logo_decoration.dart';
 export 'package:chat_flapp/widgets/label_register.dart';
