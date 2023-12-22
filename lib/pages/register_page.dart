@@ -1,6 +1,11 @@
-import 'package:chat_flapp/pages/pages.dart';
-import 'package:chat_flapp/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+
+import 'package:chat_flapp/services/auth_services.dart';
+import 'package:chat_flapp/helpers/mostrar_alaerta.dart';
+
+import 'package:chat_flapp/widgets/widgets.dart';
+import 'package:chat_flapp/pages/pages.dart';
 
 
 class ResgisterPage extends StatelessWidget {
@@ -62,6 +67,8 @@ class ___FormStateState extends State<__FormState> {
   final nameCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
+    final authServices =  Provider.of<AuthServices>(context);
     return Container(
       margin: const EdgeInsets.only(top: 30),
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -87,9 +94,15 @@ class ___FormStateState extends State<__FormState> {
            isPassword: true,
            textEditingController: passwordCtrl,
             ),
-            BlueButton(text: 'Registrar', onPressed: (){
-              print(emailCtrl);
-              print(passwordCtrl);
+            BlueButton(text: 'Registrar Cuenta', onPressed: authServices.autenticando ? null:() async{
+
+              final resgistroOk = await authServices.register(emailCtrl.text.trim(), passwordCtrl.text.trim(), nameCtrl.text.trim());
+              if(resgistroOk == true){
+                //TODO mandar al sokect service
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UsuarioPage()));
+              }else{
+                mostrarAlerta(context, 'No se registror', resgistroOk);
+              }
             })
         ]),
     );

@@ -1,6 +1,10 @@
+import 'package:chat_flapp/helpers/mostrar_alaerta.dart';
 import 'package:chat_flapp/pages/pages.dart';
+import 'package:chat_flapp/routes/routes.dart';
+import 'package:chat_flapp/services/auth_services.dart';
 import 'package:chat_flapp/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class LoadingPage extends StatelessWidget {
@@ -11,20 +15,20 @@ class LoadingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Color(0xffF2F2F2),
+        backgroundColor: const Color(0xffF2F2F2),
         body: SafeArea(
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Container(
               height: MediaQuery.of(context).size.height * 0.9,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  LogoInitial(title: 'Messenger',),
+                  const LogoInitial(title: 'Messenger',),
                   
                   __FormState(),
                 
-                  LabelsRegister(ruta: ResgisterPage.routeName,titulo: 'Crear Una Cuenta Ahora',subtitulo: 'No Tienes Una Cuenta?',),
+                  const LabelsRegister(ruta: ResgisterPage.routeName,titulo: 'Crear Una Cuenta Ahora',subtitulo: 'No Tienes Una Cuenta?',),
                 
                   _Conditions()
                 ],
@@ -61,6 +65,8 @@ class ___FormStateState extends State<__FormState> {
   final passwordCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+     final authServices = Provider.of<AuthServices>(context);
+     
     return Container(
       margin: const EdgeInsets.only(top: 30),
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -80,9 +86,16 @@ class ___FormStateState extends State<__FormState> {
            isPassword: true,
            textEditingController: passwordCtrl,
             ),
-            BlueButton(text: 'Ingresar', onPressed: (){
-              print(emailCtrl);
-              print(passwordCtrl);
+            BlueButton(text: 'Ingresar', 
+            onPressed: authServices.autenticando ? null :() async{
+              FocusScope.of(context).unfocus();
+              final loginOk = await authServices.login(emailCtrl.text.trim(), passwordCtrl.text.trim());
+
+              if(loginOk){
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UsuarioPage()));
+              }else{
+               mostrarAlerta(context,'Login Incorrecto', 'Revisar las credenciales ingresadas');
+              }
             })
         ]),
     );
